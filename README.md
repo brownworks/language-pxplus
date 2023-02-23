@@ -1,2 +1,3 @@
-# language-pxplus
-PxPlus Syntax Highlighting for Pulsar Editor
+# PxPlus language support in Pulsar
+
+Adds syntax highlighting and snippets for PxPlus in Pulsar.
