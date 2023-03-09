@@ -1,4 +1,4 @@
 'scope.pxplus':
-	'if':
+	'if statement':
 		'prefix': 'if'
 		'body': 'if (${1:true} {\n\t$2\n})'

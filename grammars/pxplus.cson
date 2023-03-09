@@ -13,50 +13,284 @@ fileTypes: [ # An array of file extensions.
 firstLineMatch: '' # A regular expression that is matched against the first line of the document when Atom is trying to decide if the grammar is appropriate. Useful for shell scripts, mostly.
 foldingStartMarker: '' # A regular expression that checks for the start of a foldable area (such as `{`).
 foldingStopMarker: '' # A regular expression that checks for the end of a foldable area (such as `}`). If both folding markers are matched in the same line, there will be no foldable area.
-patterns: [ # An array of individual pattern declarations.
+patterns: [
   {
-    match: '' # A regular expression that matches some content. Optional.
-    begin: '' # A regular expression that precedes the content. Optional.
-    end: '' # A regular expression that follows the content. Optional.
-    name: '' # A period-delimited list of classes that will be applied to the content identified by `match`. Optional.
-    contentName: '' # A period-delimited list of classes that will be applied to the content within `begin` and `end`. Optional.
-    captures: # An array of `name` designations for `match` expressions that capture multiple bits. Optional.
-      0: # Arrays start at zero. This one will catch the whole regex. 1+ will catch the capture groups.
-        name: '' # This should be self-explanatory by now.
-    beginCaptures: # An array of `name` designations for `begin` expressions that capture multiple bits. Optional.
-      0:
-        name: ''
-    endCaptures: # An array of `name` designations for `end` expressions that capture multiple bits. Optional.
-      0:
-        name: ''
-    include: '' # This can be a reference to another grammar (by scope name), the current grammar (with `$self`), or a rule from the grammar's repository (with `#<rule>`). Optional.
-    patterns: [] # This is where you can get tricky. When you have matched content, Atom will search within it for anything in the child array. You can have `patterns[]` within `patterns[]`, then throw an `include` in to jump to some other rule or refer back to the root of the grammar. If you are making a rule that captures a block that might contain other tags, you should refer back to the root. Optional, naturally.
+    include: '#comments'
   }
   {
-    match: ''
-    begin: ''
-    end: ''
-    name: ''
-    contentName: ''
-    captures:
-      0:
-        name: ''
-    beginCaptures:
-      0:
-        name: ''
-    endCaptures:
-      0:
-        name: ''
-    include: ''
+    include: '#entities'
+  }
+  {
+    include: '#keywords'
+  }
+  {
+    include: '#strings'
+  }
+  {
+    include: '#numerics'
+  }
+  {
+    include: '#supports'
+  }
+  {
+    include: '#variables'
   }
 ]
-repository: # An array of rules. If you're going to be referencing one bit of code over and over again, stick it here so that you can edit all in one place.
-  ruleName: # Can be anything.
-    {
-      name: ''
-      match: ''
-      end: ''
-      endCaptures:
-        0:
-          name: ''
-    }
+
+repository: {
+  comments: {
+    patterns: [
+      {
+        begin: '\\!'
+        beginCaptures: {
+          0: {
+            name: 'punctuation.definition.comment.pxplus'
+          }
+        }
+        end: '\\n'
+        name: 'comment.line.pxplus'
+      }
+      {
+        begin: '(?i:REM)\\s'
+        beginCaptures: {
+          0: {
+            name: 'punctuation.definition.comment.pxplus'
+          }
+        }
+        end: '\\n'
+        name: 'comment.line.pxplus'
+      }
+    ]
+  }
+  entities: {
+    patterns: [
+      {
+        captures: {
+          1: {
+            name: 'storage.type.class.pxplus'
+          }
+          2: {
+            name: 'entity.name.class.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:DEF\\sCLASS))[\\t ]+\"([A-Za-z_][A-Za-z0-9_]*)*\"'
+        name: 'meta.class.pxplus'
+      }
+      {
+        captures: {
+          1: {
+            name: 'keyword.other.pxplus'
+          }
+          2: {
+            name: 'entity.name.class.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:LIKE))[\\t ]+\"([A-Za-z_][A-Za-z0-9_]*)*\"'
+        name: 'meta.class.inheritance.pxplus'
+      }
+      {
+        captures: {
+          1: {
+            name: 'storage.type.property.pxplus'
+          }
+          2: {
+            name: 'variable.other.member.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)(?!.*(?:OBJECT))'
+      }
+      {
+        captures: {
+          1: {
+            name: 'storage.type.property.pxplus'
+          }
+          2: {
+            name: 'variable.other.object.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)(?=.*(?:OBJECT))'
+      }
+      {
+        match: '(?<=(GET|get)\\s)[\\t ]*([A-Za-z_][A-Za-z0-9_]*)\\s'
+        name: 'entity.name.section.pxplus'
+      }
+      {
+        match: '^[\\t ]*([A-Za-z_][A-Za-z0-9_]*)(?=\\:[\\s$])'
+        name: 'entity.name.section.pxplus'
+      }
+      {
+        captures: {
+          1: {
+            name: 'storage.type.function.pxplus'
+          }
+          2: {
+            name: 'entity.name.function.pxplus'
+          }
+          3: {
+            name: 'variable.parameter.function.pxplus'
+          }
+          4: {
+            name: 'entity.name.section.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+LOCAL|\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*([A-Za-z_][A-Za-z0-9_]*|)'
+        name: 'meta.function.pxplus'
+      }
+      {
+        captures: {
+          1: {
+            name: 'storage.type.function.pxplus'
+          }
+          2: {
+            name: 'entity.name.function.pxplus'
+          }
+          3: {
+            name: 'variable.parameter.function.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+LOCAL|\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*[\\s\\=]'
+        name: 'meta.function.pxplus'
+      }
+      {
+        captures: {
+          1: {
+            name: 'storage.type.object.pxplus'
+          }
+          2: {
+            name: 'variable.other.object.pxplus'
+          }
+        }
+        match: '^[\\t ]*((?i:LOCAL))[\\t ]+([A-Za-z_][A-Za-z0-9_]*)[\\t ]+(?=(?i:OBJECT))'
+      }
+      {
+        captures: {
+          1: {
+            name: 'variable.other.object.pxplus'
+          }
+          2: {
+            name: 'support.function.builtin.pxplus'
+          }
+          3: {
+            name: 'entity.name.class.pxplus'
+          }
+        }
+        match: '\\b([A-Za-z_][A-Za-z0-9_]*)\\b[\\t ]*=[\\t ]*((?:NEW))[\\t ]*\\(\"([A-Za-z_][A-Za-z0-9_]*)*\"'
+      }
+      {
+        captures: {
+          1: {
+            name: 'punctuation.definition.function.pxplus'
+          }
+          2: {
+            name: 'entity.name.function.pxplus'
+          }
+        }
+        match: '(\.\'|\')([A-Za-z_][A-Za-z0-9_$]*)(?=\\()'
+      }
+      {
+        name: 'entity.name.function.pxplus'
+        match: '\\bFN%[A-Za-z_][A-Za-z0-9_$]*(?=\\()'
+      }
+    ]
+  }
+  keywords: {
+    patterns: [
+      {
+        name: 'keyword.operator.comparison.pxplus'
+        match: '<\\=|>\\=|<|>|\\='
+      }
+      {
+        name: 'keyword.operator.arithmetic.pxplus'
+        match: '(\\+\\=|\\-\\=|\\*\\=|\\\\\=|\\=|\\+|\\-|\\/|\\*)'
+      }
+      {
+        name: 'keyword.operator.pxplus'
+        match: '\\b(?i:(AND|OR))\\b'
+      }
+      {
+        name: 'keyword.control.conditional.pxplus'
+        match: '\\b(?i:(IF|THEN|ELSE|WHERE))\\b'
+      }
+      {
+        name: 'keyword.control.exception.pxplus'
+        match: '\\b(?i:(CATCH|END_TRY|FINALLY|TRY))\\b'
+      }
+      {
+        name: 'keyword.control.repeat.pxplus'
+        match: '\\b(?i:(FOR|REPEAT|WHILE|NEXT|UNTIL|WEND))\\b'
+      }
+      {
+        name: 'keyword.control.pxplus'
+        match: '\\b(?i:(BREAK|CALL|CASE|CONTINUE|CREATE REQUIRED|DEFAULT|DELETE REQUIRED|GOSUB|GET|NEXT|SET ERR|SWITCH))\\b'
+      }
+      {
+        name: 'keyword.other.pxplus'
+        match: '\\b(?i:(ADDR|BEGIN|CLOSE|DELETE|DIM|DROP|END DEF|END|ENTER|EXIT ERR|EXIT|FIND|FROM|IOLIST|LOCAL|OBJECT|OPEN|READ DATA FROM|READ|RECORD|RETURN|SELECT KEY|SELECT|STATIC|TO|WRITE))\\b'
+      }
+      {
+        name: 'keyword.other.option.pxplus'
+        match: '\\b(?i:(BSY|DOM|ERR|IOL|KEY|KNO|REC))(?=[\t ]*=)\\b'
+      }
+    ]
+  }
+  strings: {
+    patterns: [
+      {
+        name: 'string.quoted.double.pxplus'
+        begin: '\"'
+        end: '\"'
+      }
+    ]
+  }
+  numerics: {
+    patterns: [
+      {
+        name: 'constant.numeric.pxplus'
+        match: '\\b([0-9.]+)\\b'
+      }
+    ]
+  }
+  supports: {
+    patterns: [
+      {
+        name: 'support.variable.builtin.pxplus'
+        match: '\\b(?i:(_OBJ|BKG|CHN|HFN|UNT))(?!\\()\\b'
+      }
+      {
+        name: 'support.function.builtin.pxplus'
+        match: '\\b(?i:(ARG|CPL|DIM|EVN|EVS|FID|IOL|LCS|LEN|LST|MID|MSG|NOT|NUL|NUM|PAD|POS|REC|REF|STP|STR|SUB|TBL|TCB|UCS|VIN|VIS))(?=\\()\\b'
+      }
+    ]
+  }
+  variables: {
+    patterns: [
+      {
+        name: 'variable.other.object.pxplus'
+        match: '([A-Za-z_][A-Za-z0-9_]*)(?=\')'
+      }
+      {
+        captures: {
+          1: {
+            name: 'punctuation.definition.member.pxplus'
+          }
+          2: {
+            name: 'variable.other.member.pxplus'
+          }
+        }
+        match: '(\')([A-Za-z_][A-Za-z0-9_$]*)'
+      }
+      {
+        captures: {
+          1: {
+            name: 'punctuation.definition.global.pxplus'
+          }
+          2: {
+            name: 'variable.other.global.pxplus'
+          }
+        }
+        match: '(?<!FN|fn)(%)([A-Za-z_][A-Za-z0-9_$]*)'
+        name: 'meta.variable.pxplus'
+      }
+    ]
+  }
+}
