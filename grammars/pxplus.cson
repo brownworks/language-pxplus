@@ -94,10 +94,10 @@ repository: {
             name: 'storage.type.property.pxplus'
           }
           2: {
-            name: 'variable.other.member.pxplus'
+            name: 'variable.other.object.pxplus'
           }
         }
-        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)(?!.*(?:OBJECT))'
+        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_]*)[\\t ]*(?=(?i:OBJECT))'
       }
       {
         captures: {
@@ -105,13 +105,13 @@ repository: {
             name: 'storage.type.property.pxplus'
           }
           2: {
-            name: 'variable.other.object.pxplus'
+            name: 'variable.other.member.pxplus'
           }
         }
-        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)(?=.*(?:OBJECT))'
+        match: '^[\\t ]*((?i:PROPERTY(?i:\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\t ]*'
       }
       {
-        match: '(?<=(GET|get)\\s)[\\t ]*([A-Za-z_][A-Za-z0-9_]*)\\s'
+        match: '(?<=(GET|get)\\s)[\\t ]*([A-Za-z_][A-Za-z0-9_]*)[\\s$]'
         name: 'entity.name.section.pxplus'
       }
       {
@@ -133,7 +133,7 @@ repository: {
             name: 'entity.name.section.pxplus'
           }
         }
-        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+LOCAL|\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*([A-Za-z_][A-Za-z0-9_]*|)'
+        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+HIDE|\\s+LOCAL|\\s+PERFORM|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*([A-Za-z_][A-Za-z0-9_]*|)'
         name: 'meta.function.pxplus'
       }
       {
@@ -148,7 +148,7 @@ repository: {
             name: 'variable.parameter.function.pxplus'
           }
         }
-        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+LOCAL|\\s+HIDE|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*[\\s\\=]'
+        match: '^[\\t ]*((?i:FUNCTION(?i:\\s+HIDE|\\s+LOCAL|\\s+PERFORM|)))[\\t ]+([A-Za-z_][A-Za-z0-9_$]*)[\\(\\t ](.*)[\\)][\\t ]*[\\s\\=]'
         name: 'meta.function.pxplus'
       }
       {
@@ -168,13 +168,16 @@ repository: {
             name: 'variable.other.object.pxplus'
           }
           2: {
-            name: 'support.function.builtin.pxplus'
+            name: 'keyword.operator.pxplus'
           }
           3: {
+            name: 'support.function.builtin.pxplus'
+          }
+          4: {
             name: 'entity.name.class.pxplus'
           }
         }
-        match: '\\b([A-Za-z_][A-Za-z0-9_]*)\\b[\\t ]*=[\\t ]*((?:NEW))[\\t ]*\\(\"([A-Za-z_][A-Za-z0-9_]*)*\"'
+        match: '\\b([A-Za-z_][A-Za-z0-9_]*)\\b[\\t ]*(=)[\\t ]*((?:NEW))[\\t ]*\\(\"([A-Za-z_][A-Za-z0-9_]*)*\"'
       }
       {
         captures: {
@@ -189,20 +192,12 @@ repository: {
       }
       {
         name: 'entity.name.function.pxplus'
-        match: '\\bFN%[A-Za-z_][A-Za-z0-9_$]*(?=\\()'
+        match: '\\b(FN|fn)[%]*[A-Za-z_][A-Za-z0-9_$]*(?=\\()'
       }
     ]
   }
   keywords: {
     patterns: [
-      {
-        name: 'keyword.operator.comparison.pxplus'
-        match: '<\\=|>\\=|<|>|\\='
-      }
-      {
-        name: 'keyword.operator.arithmetic.pxplus'
-        match: '(\\+\\=|\\-\\=|\\*\\=|\\\\\=|\\=|\\+|\\-|\\/|\\*)'
-      }
       {
         name: 'keyword.operator.pxplus'
         match: '\\b(?i:(AND|OR))\\b'
@@ -213,7 +208,11 @@ repository: {
       }
       {
         name: 'keyword.control.exception.pxplus'
-        match: '\\b(?i:(CATCH|END_TRY|FINALLY|TRY))\\b'
+        match: '\\b(?i:(CATCH|END_TRY|FINALLY|TRY|ERROR_HANDLER))\\b'
+      }
+      {
+        name: 'keyword.control.exception.pxplus'
+        match: '\\*(?i:(BREAK|CONTINUE|NEXT|PROCEED))'
       }
       {
         name: 'keyword.control.repeat.pxplus'
@@ -225,11 +224,19 @@ repository: {
       }
       {
         name: 'keyword.other.pxplus'
-        match: '\\b(?i:(ADDR|BEGIN|CLOSE|DELETE|DIM|DROP|END DEF|END|ENTER|EXIT ERR|EXIT|FIND|FROM|IOLIST|LOCAL|OBJECT|OPEN|READ DATA FROM|READ|RECORD|RETURN|SELECT KEY|SELECT|STATIC|TO|WRITE))\\b'
+        match: '\\b(?i:(ADDR|BEGIN|CLOSE|DELETE|DIM|DROP|END DEF|END|ENTER|EXIT ERR|EXIT|FIND|FROM|IOLIST|LOCAL|OBJECT|OPEN|READ DATA FROM|READ|RECORD|REMOVE|RETURN|SELECT KEY|SELECT|STATIC|TO|WRITE))\\b'
       }
       {
         name: 'keyword.other.option.pxplus'
-        match: '\\b(?i:(BSY|DOM|ERR|IOL|KEY|KNO|REC))(?=[\t ]*=)\\b'
+        match: '\\b(?i:(BSY|DOM|ERR|IOL|KEY|KNO|REC))(?=[\\t ]*=)\\b'
+      }
+      {
+        name: 'keyword.operator.comparison.pxplus'
+        match: '(<\\=|>\\=|<|>|\\=)'
+      }
+      {
+        name: 'keyword.operator.arithmetic.pxplus'
+        match: '(\\+\\=|\\-\\=|\\*\\=|\\/\\=|\\=|\\+|\\-|\\/|\\*)'
       }
     ]
   }
@@ -240,13 +247,17 @@ repository: {
         begin: '\"'
         end: '\"'
       }
+      {
+        name: 'constant.character.pxplus'
+        match: '\\$[0-9A-Fa-f]*\\$'
+      }
     ]
   }
   numerics: {
     patterns: [
       {
         name: 'constant.numeric.pxplus'
-        match: '\\b([0-9.]+)\\b'
+        match: '\\b(?<!\\$)([0-9.]+)(?!\\$)\\b'
       }
     ]
   }
@@ -254,11 +265,15 @@ repository: {
     patterns: [
       {
         name: 'support.variable.builtin.pxplus'
-        match: '\\b(?i:(_OBJ|BKG|CHN|HFN|UNT))(?!\\()\\b'
+        match: '\\b(?i:(_OBJ|BKG|CHN|HFN|LFO|UNT))(?![\\($])\\b'
+      }
+      {
+        name: 'support.variable.builtin.pxplus'
+        match: '\\b(?i:_CLASS\\$)'
       }
       {
         name: 'support.function.builtin.pxplus'
-        match: '\\b(?i:(ARG|CPL|DIM|EVN|EVS|FID|IOL|LCS|LEN|LST|MID|MSG|NOT|NUL|NUM|PAD|POS|REC|REF|STP|STR|SUB|TBL|TCB|UCS|VIN|VIS))(?=\\()\\b'
+        match: '\\b(?i:(ARG|CPL|CVS|DIM|EVN|EVS|FID|IOL|LCS|LEN|LST|MAX|MID|MIN|MSG|NOT|NUL|NUM|PAD|POS|REC|REF|STP|STR|SUB|TBL|TCB|UCS|VIN|VIS))(?=\\()\\b'
       }
     ]
   }
